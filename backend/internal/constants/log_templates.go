@@ -1,0 +1,33 @@
+package constants
+
+// 日志模板集中管理。
+const (
+	LogUserLoginSuccess           = "user login success"
+	LogUserLoginFailed            = "user login failed"
+	LogUserRegisterSuccess        = "user register success"
+	LogUserProfileUpdate          = "user profile update"
+	LogIncidentReportStart        = "incident report start"
+	LogIncidentReportSuccess      = "incident report success"
+	LogIncidentReportFailed       = "incident report failed"
+	LogIncidentAssignSuccess      = "incident assign success"
+	LogIncidentRectifySuccess     = "incident rectify success"
+	LogIncidentCloseSuccess       = "incident close success"
+	LogIncidentStatusChangeFailed = "incident status change failed"
+	LogInspectionCreateSuccess    = "inspection create success"
+	LogInspectionExecuteSuccess   = "inspection execute success"
+	LogInspectionExecuteFailed    = "inspection execute failed"
+	LogInspectionReport           = "inspection report"
+	LogTrainingCreateSuccess      = "training create success"
+	LogTrainingSignupSuccess      = "training signup success"
+	LogTrainingRecordSuccess      = "training record success"
+	LogCertSubmitSuccess          = "cert submit success"
+	LogCertReviewSuccess          = "cert review success"
+	LogCertReviewFailed           = "cert review failed"
+	LogCertExpiryWarning          = "cert expiry warning"
+	LogDashboardStats             = "dashboard stats"
+	LogAuditWriteFailed           = "audit log write failed"
+	LogUploadImageSuccess         = "upload image success"
+	LogUploadImageFailed          = "upload image failed"
+	LogRateLimitHit               = "rate limit hit"
+	LogNotificationCreate         = "notification create"
+)

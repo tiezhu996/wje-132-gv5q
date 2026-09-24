@@ -1,0 +1,8 @@
+- generic [ref=e4]:
+  - generic [ref=e5]: 建筑施工安全管理平台
+  - generic [ref=e9]:
+    - textbox "手机号" [ref=e15]: "13800000002"
+    - generic [ref=e21]:
+      - textbox "密码" [ref=e22]: User@123
+      - img "eye-invisible" [ref=e24] [cursor=pointer]
+    - button "登 录" [ref=e28] [cursor=pointer]

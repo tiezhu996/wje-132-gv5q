@@ -1,0 +1,55 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e30]:
+    - banner [ref=e31]:
+      - generic [ref=e32] [cursor=pointer]: 施工安全管理平台
+      - menu [ref=e33]:
+        - menuitem "安全概览" [ref=e34] [cursor=pointer]
+        - menuitem "事件管理" [ref=e35] [cursor=pointer]
+        - menuitem "检查管理" [ref=e36] [cursor=pointer]
+        - menuitem "培训管理" [ref=e37] [cursor=pointer]
+        - menuitem "资质审核" [ref=e38] [cursor=pointer]
+        - menuitem "审计日志" [ref=e39] [cursor=pointer]
+        - menuitem "个人中心" [ref=e40] [cursor=pointer]
+        - menuitem [disabled]
+      - generic [ref=e41] [cursor=pointer]:
+        - img "user" [ref=e44]
+        - generic [ref=e47]: 王安全
+    - main [ref=e48]:
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - generic [ref=e54]:
+            - generic [ref=e55]: 检查计划总数
+            - generic [ref=e56]: "3"
+          - generic [ref=e61]:
+            - generic [ref=e62]: 检查完成率
+            - generic [ref=e63]:
+              - generic [ref=e64]: "33.33333333333333"
+              - generic [ref=e65]: "%"
+          - generic [ref=e69]:
+            - generic [ref=e70]: 本月培训完成率
+            - generic [ref=e71]:
+              - generic [ref=e72]: "66.66666666666666"
+              - generic [ref=e73]: "%"
+          - generic [ref=e77]:
+            - generic [ref=e78]: 即将过期资质
+            - generic [ref=e79]: "1"
+        - generic [ref=e94]:
+          - generic [ref=e95]: 待整改事件
+          - table [ref=e105]:
+            - rowgroup [ref=e106]:
+              - row [ref=e107]:
+                - columnheader "标题" [ref=e108]
+                - columnheader "区域" [ref=e109]
+                - columnheader "风险等级" [ref=e110]
+                - columnheader "状态" [ref=e111]
+                - columnheader "整改期限" [ref=e112]
+            - rowgroup [ref=e113]:
+              - row [ref=e114]:
+                - cell "脚手架扣件松动" [ref=e115]
+                - cell "三层东侧" [ref=e116]
+                - cell "较大" [ref=e117]
+                - cell "调查中" [ref=e119]
+                - cell "2026-08-19" [ref=e121]
+  - generic [ref=e123]:
+    - img "check-circle" [ref=e124]
+    - generic [ref=e127]: 登录成功

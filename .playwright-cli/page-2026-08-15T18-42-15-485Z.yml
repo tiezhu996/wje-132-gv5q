@@ -1,0 +1,84 @@
+- generic [ref=f1e3]:
+  - banner [ref=f1e4]:
+    - generic [ref=f1e5] [cursor=pointer]: 施工安全管理平台
+    - menu [ref=f1e6]:
+      - menuitem "安全概览" [ref=f1e7] [cursor=pointer]
+      - menuitem "事件管理" [ref=f1e8] [cursor=pointer]
+      - menuitem "检查管理" [ref=f1e9] [cursor=pointer]
+      - menuitem "培训管理" [ref=f1e10] [cursor=pointer]
+      - menuitem "资质审核" [ref=f1e11] [cursor=pointer]
+      - menuitem "审计日志" [ref=f1e12] [cursor=pointer]
+      - menuitem "个人中心" [ref=f1e13] [cursor=pointer]
+      - menuitem [disabled]
+    - generic [ref=f1e14] [cursor=pointer]:
+      - img "user" [ref=f1e17]
+      - generic [ref=f1e20]: 王安全
+  - main [ref=f1e21]:
+    - generic [ref=f1e23]:
+      - generic [ref=f1e24]:
+        - generic [ref=f1e28] [cursor=pointer]:
+          - combobox [ref=f1e30]
+          - generic: 严重等级
+        - generic [ref=f1e34] [cursor=pointer]:
+          - combobox [ref=f1e36]
+          - generic: 状态
+        - button "plus 上报事件" [ref=f1e38] [cursor=pointer]:
+          - img "plus" [ref=f1e40]
+          - generic [ref=f1e44]: 上报事件
+      - generic [ref=f1e47]:
+        - table [ref=f1e51]:
+          - rowgroup [ref=f1e54]:
+            - row [ref=f1e55]:
+              - columnheader "ID" [ref=f1e56]
+              - columnheader "标题" [ref=f1e57]
+              - columnheader "区域" [ref=f1e58]
+              - columnheader "风险等级" [ref=f1e59]
+              - columnheader "分类" [ref=f1e60]
+              - columnheader "状态" [ref=f1e61]
+              - columnheader "发生时间" [ref=f1e62]
+              - columnheader "操作" [ref=f1e63]
+          - rowgroup [ref=f1e64]:
+            - row [ref=f1e65]:
+              - cell "4" [ref=f1e66]
+              - cell "冒烟测试隐患" [ref=f1e67]
+              - cell "一层" [ref=f1e68]
+              - cell "一般" [ref=f1e69]
+              - cell "机械伤害" [ref=f1e71]
+              - cell "已关闭" [ref=f1e72]
+              - cell "2026-08-16 10:00" [ref=f1e74]
+              - cell "详情" [ref=f1e75]
+            - row [ref=f1e76]:
+              - cell "1" [ref=f1e77]
+              - cell "脚手架扣件松动" [ref=f1e78]
+              - cell "三层东侧" [ref=f1e79]
+              - cell "较大" [ref=f1e80]
+              - cell "坠落" [ref=f1e82]
+              - cell "调查中" [ref=f1e83]
+              - cell "2026-08-15 02:40" [ref=f1e85]
+              - cell "详情" [ref=f1e86]
+            - row [ref=f1e87]:
+              - cell "2" [ref=f1e88]
+              - cell "临时用电电缆破损" [ref=f1e89]
+              - cell "加工区" [ref=f1e90]
+              - cell "一般" [ref=f1e91]
+              - cell "触电" [ref=f1e93]
+              - cell "已整改" [ref=f1e94]
+              - cell "2026-08-14 02:40" [ref=f1e96]
+              - cell "详情" [ref=f1e97]
+            - row [ref=f1e98]:
+              - cell "3" [ref=f1e99]
+              - cell "高处坠物未遂" [ref=f1e100]
+              - cell "吊装区" [ref=f1e101]
+              - cell "轻微" [ref=f1e102]
+              - cell "物体打击" [ref=f1e104]
+              - cell "已关闭" [ref=f1e105]
+              - cell "2026-08-11 02:40" [ref=f1e107]
+              - cell "详情" [ref=f1e108]
+        - list [ref=f1e109]:
+          - listitem "上一页" [ref=f1e110]:
+            - button [disabled] [ref=f1e111]:
+              - img "left" [ref=f1e112]
+          - listitem "1" [ref=f1e115] [cursor=pointer]
+          - listitem "下一页" [ref=f1e117]:
+            - button [disabled] [ref=f1e118]:
+              - img "right" [ref=f1e119]
