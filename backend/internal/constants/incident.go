@@ -12,6 +12,9 @@ const (
 // SeverityValues 全部严重等级值。
 var SeverityValues = []string{SeverityNearMiss, SeverityMinor, SeverityModerate, SeverityMajor, SeverityFatal}
 
+// SeverityRankOrder 风险等级由高到低排序，用于逾期验收队列等场景。
+var SeverityRankOrder = []string{SeverityFatal, SeverityMajor, SeverityModerate, SeverityMinor, SeverityNearMiss}
+
 // IncidentStatus 事件状态枚举。
 const (
 	IncidentReported      = "reported"

@@ -94,3 +94,17 @@ export interface PageResult<T> {
   page: number
   page_size: number
 }
+
+export interface IncidentSupervision {
+  id?: number
+  incident_id: number
+  note: string
+  operator_id: number
+  operator_name: string
+  created_at: string
+}
+
+export interface OverdueAcceptanceItem extends SafetyIncident {
+  overdue_seconds: number
+  supervision: IncidentSupervision | null
+}

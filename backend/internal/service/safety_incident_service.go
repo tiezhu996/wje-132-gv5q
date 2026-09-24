@@ -1,10 +1,12 @@
 package service
 
 import (
+	"errors"
 	"log/slog"
 	"time"
 
 	"safetyplatform/internal/constants"
+	"safetyplatform/internal/dto"
 	"safetyplatform/internal/model"
 	"safetyplatform/internal/repository"
 	"safetyplatform/internal/util"
@@ -12,14 +14,15 @@ import (
 
 // SafetyIncidentService 安全事件业务逻辑。
 type SafetyIncidentService struct {
-	repo     *repository.SafetyIncidentRepository
-	userRepo *repository.UserRepository
-	logger   *slog.Logger
+	repo            *repository.SafetyIncidentRepository
+	userRepo        *repository.UserRepository
+	supervisionRepo *repository.IncidentSupervisionRepository
+	logger          *slog.Logger
 }
 
 // NewSafetyIncidentService 构造安全事件服务。
-func NewSafetyIncidentService(repo *repository.SafetyIncidentRepository, userRepo *repository.UserRepository, logger *slog.Logger) *SafetyIncidentService {
-	return &SafetyIncidentService{repo: repo, userRepo: userRepo, logger: logger}
+func NewSafetyIncidentService(repo *repository.SafetyIncidentRepository, userRepo *repository.UserRepository, supervisionRepo *repository.IncidentSupervisionRepository, logger *slog.Logger) *SafetyIncidentService {
+	return &SafetyIncidentService{repo: repo, userRepo: userRepo, supervisionRepo: supervisionRepo, logger: logger}
 }
 
 // Report 上报事件。
@@ -118,6 +121,73 @@ func (s *SafetyIncidentService) SeverityDistribution() ([]map[string]any, error)
 // PendingRectification 待整改列表。
 func (s *SafetyIncidentService) PendingRectification() ([]model.SafetyIncident, error) {
 	return s.repo.PendingRectification()
+}
+
+// OverdueAcceptanceQueue 逾期验收队列：仅包含已整改且整改期限早于当前时刻的事件，
+// 按逾期时长（期限越早越靠前）和风险等级（fatal>major>moderate>minor>near_miss）排序。
+func (s *SafetyIncidentService) OverdueAcceptanceQueue() ([]dto.OverdueAcceptanceItem, error) {
+	now := time.Now()
+	list, err := s.repo.ListOverdueResolved(now, constants.SeverityRankOrder)
+	if err != nil {
+		return nil, util.Wrap(err, "SafetyIncident overdue acceptance queue failed")
+	}
+	ids := make([]uint64, 0, len(list))
+	for i := range list {
+		ids = append(ids, list[i].ID)
+	}
+	supMap, err := s.supervisionRepo.MapByIncidentIDs(ids)
+	if err != nil {
+		return nil, util.Wrap(err, "SafetyIncident overdue acceptance queue load supervisions failed")
+	}
+	items := make([]dto.OverdueAcceptanceItem, 0, len(list))
+	for i := range list {
+		sup, ok := supMap[list[i].ID]
+		if !ok {
+			items = append(items, dto.NewOverdueAcceptanceItem(list[i], now, nil))
+			continue
+		}
+		supCopy := sup
+		items = append(items, dto.NewOverdueAcceptanceItem(list[i], now, &supCopy))
+	}
+	return items, nil
+}
+
+// Supervise 对一条已整改逾期事件发起督办，每条事件仅允许督办一次。
+// 已关闭、未整改或期限未到的事件不能督办；重复督办返回冲突。
+func (s *SafetyIncidentService) Supervise(incidentID, operatorID uint64, note string) (*model.IncidentSupervision, error) {
+	i, err := s.repo.FindByID(incidentID)
+	if err != nil {
+		return nil, util.Wrap(err, "SafetyIncident[id=%d] supervise find failed", incidentID)
+	}
+	if i.Status != constants.IncidentResolved {
+		return nil, util.NewAppError(constants.CodeIncidentStatusConflict,
+			"SafetyIncident[id="+u64(incidentID)+"] supervise conflict: status="+i.Status+" (only resolved accepted)")
+	}
+	if i.RectificationDeadline == nil || !i.RectificationDeadline.Before(time.Now()) {
+		return nil, util.NewAppError(constants.CodeIncidentNotOverdue,
+			"SafetyIncident[id="+u64(incidentID)+"] supervise conflict: rectification deadline not reached")
+	}
+	operatorName := ""
+	if u, uErr := s.userRepo.FindByID(operatorID); uErr == nil {
+		operatorName = u.Name
+	}
+	sup := &model.IncidentSupervision{
+		IncidentID:   incidentID,
+		Note:         note,
+		OperatorID:   operatorID,
+		OperatorName: operatorName,
+		CreatedAt:    time.Now(),
+	}
+	if err := s.supervisionRepo.Create(sup); err != nil {
+		if errors.Is(err, repository.ErrDuplicate) {
+			s.logger.Warn(constants.LogIncidentSuperviseConflict, "incident_id", incidentID, "operator_id", operatorID)
+			return nil, util.NewAppError(constants.CodeIncidentSupervisionDuplicate,
+				"SafetyIncident[id="+u64(incidentID)+"] supervise conflict: already supervised")
+		}
+		return nil, util.Wrap(err, "SafetyIncident[id=%d] supervise save failed", incidentID)
+	}
+	s.logger.Info(constants.LogIncidentSuperviseSuccess, "incident_id", incidentID, "operator_id", operatorID)
+	return sup, nil
 }
 
 func u64(v uint64) string {

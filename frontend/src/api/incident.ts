@@ -23,3 +23,11 @@ export function rectifyIncident(id: number, data: { measures: string; deadline?:
 export function closeIncident(id: number) {
   return request.post(`/incidents/${id}/close`)
 }
+
+export function listOverdueAcceptance() {
+  return request.get('/incidents/overdue-acceptance')
+}
+
+export function superviseIncident(id: number, note: string) {
+  return request.post(`/incidents/${id}/supervisions`, { note })
+}

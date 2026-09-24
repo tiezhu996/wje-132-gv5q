@@ -34,6 +34,7 @@ func main() {
 	if err := db.AutoMigrate(
 		&model.User{}, &model.SafetyIncident{}, &model.SafetyInspection{}, &model.InspectionItem{},
 		&model.SafetyTraining{}, &model.WorkerCertification{}, &model.AuditLog{},
+		&model.IncidentSupervision{},
 	); err != nil {
 		logger.Error("auto migrate failed", "error", err.Error())
 		os.Exit(1)
@@ -45,13 +46,14 @@ func main() {
 
 	userRepo := repository.NewUserRepository(db)
 	incidentRepo := repository.NewSafetyIncidentRepository(db)
+	supervisionRepo := repository.NewIncidentSupervisionRepository(db)
 	inspectionRepo := repository.NewSafetyInspectionRepository(db)
 	itemRepo := repository.NewInspectionItemRepository(db)
 	trainingRepo := repository.NewSafetyTrainingRepository(db)
 	certRepo := repository.NewWorkerCertificationRepository(db)
 
 	userSvc := service.NewUserService(userRepo, logger)
-	incidentSvc := service.NewSafetyIncidentService(incidentRepo, userRepo, logger)
+	incidentSvc := service.NewSafetyIncidentService(incidentRepo, userRepo, supervisionRepo, logger)
 	inspectionSvc := service.NewSafetyInspectionService(db, inspectionRepo, itemRepo, userRepo, logger)
 	trainingSvc := service.NewSafetyTrainingService(trainingRepo, userRepo, logger)
 	certSvc := service.NewWorkerCertificationService(certRepo, userRepo, logger)

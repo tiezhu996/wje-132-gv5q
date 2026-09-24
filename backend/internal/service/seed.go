@@ -46,8 +46,8 @@ func (s *SeedService) Seed() error {
 	}
 	incidents := []model.SafetyIncident{
 		{Title: "脚手架扣件松动", Description: "三层东侧脚手架扣件松动，存在坠落风险。", OccurredAt: time.Now().AddDate(0, 0, -1), SiteID: "SITE-A", Area: "三层东侧", SeverityLevel: constants.SeverityMajor, Category: "坠落", InvolvedUserIDs: model.JSONList{"4"}, Status: constants.IncidentInvestigating, ReporterID: 3},
-		{Title: "临时用电电缆破损", Description: "二级配电箱电缆绝缘层破损。", OccurredAt: time.Now().AddDate(0, 0, -2), SiteID: "SITE-A", Area: "加工区", SeverityLevel: constants.SeverityModerate, Category: "触电", InvolvedUserIDs: model.JSONList{"4"}, Status: constants.IncidentResolved, ReporterID: 3},
-		{Title: "高处坠物未遂", Description: "塔吊吊运时构件滑落未造成伤害。", OccurredAt: time.Now().AddDate(0, 0, -5), SiteID: "SITE-A", Area: "吊装区", SeverityLevel: constants.SeverityMinor, Category: "物体打击", InvolvedUserIDs: model.JSONList{"4"}, Status: constants.IncidentClosed, ReporterID: 2},
+		{Title: "临时用电电缆破损", Description: "二级配电箱电缆绝缘层破损。", OccurredAt: time.Now().AddDate(0, 0, -2), SiteID: "SITE-A", Area: "加工区", SeverityLevel: constants.SeverityModerate, Category: "触电", InvolvedUserIDs: model.JSONList{"4"}, RectificationMeasures: "更换破损电缆并加套管", RectificationDeadline: ptrTime(time.Now().AddDate(0, 0, -1)), Status: constants.IncidentResolved, ReporterID: 3},
+		{Title: "高处坠物未遂", Description: "塔吊吊运时构件滑落未造成伤害。", OccurredAt: time.Now().AddDate(0, 0, -5), SiteID: "SITE-A", Area: "吊装区", SeverityLevel: constants.SeverityMinor, Category: "物体打击", InvolvedUserIDs: model.JSONList{"4"}, RectificationMeasures: "加强吊装指挥与警戒", RectificationDeadline: ptrTime(time.Now().AddDate(0, 0, -2)), Status: constants.IncidentClosed, ReporterID: 2},
 	}
 	for i := range incidents {
 		if err := s.db.Create(&incidents[i]).Error; err != nil {
@@ -95,3 +95,5 @@ func (s *SeedService) Seed() error {
 	s.logger.Info("seed data created")
 	return nil
 }
+
+func ptrTime(t time.Time) *time.Time { return &t }

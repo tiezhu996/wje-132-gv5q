@@ -20,3 +20,8 @@ type RectificationRequest struct {
 	Measures string     `json:"measures" binding:"required"`
 	Deadline *time.Time `json:"deadline"`
 }
+
+// SupervisionRequest 督办请求。
+type SupervisionRequest struct {
+	Note string `json:"note" binding:"required,max=500"`
+}

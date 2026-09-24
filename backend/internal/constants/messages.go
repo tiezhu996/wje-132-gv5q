@@ -12,6 +12,7 @@ const (
 	MsgInvalidCredentials  = "手机号或密码错误"
 	MsgIncidentReported    = "事件上报成功"
 	MsgIncidentClosed      = "事件已关闭"
+	MsgIncidentSupervised  = "督办已发起"
 	MsgInspectionCompleted = "检查已完成"
 	MsgCertSubmitted       = "资质提交成功"
 	MsgCertReviewed        = "审核完成"

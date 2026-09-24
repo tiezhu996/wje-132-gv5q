@@ -64,7 +64,7 @@ wje-132/
 │   ├── cmd/server/main.go
 │   └── internal/
 │       ├── config/
-│       ├── model/                 # user/safety_incident/safety_inspection/inspection_item/safety_training/worker_certification/audit_log
+│       ├── model/                 # user/safety_incident/incident_supervision/safety_inspection/inspection_item/safety_training/worker_certification/audit_log
 │       ├── repository/            # 按实体分文件
 │       ├── service/               # 业务逻辑 + dashboard + 种子数据 + 单元测试
 │       ├── handler/               # 按实体分文件（含 upload_handler、audit_log_handler）
@@ -140,11 +140,13 @@ wje-132/
 | GET | /api/v1/users | 用户列表（仅管理员） |
 | GET | /api/v1/dashboard/stats | 安全概览统计 |
 | GET | /api/v1/incidents | 事件分页列表 |
+| GET | /api/v1/incidents/overdue-acceptance | 逾期验收队列（已整改且期限已过，按逾期时长+风险等级排序） |
 | POST | /api/v1/incidents | 上报安全事件 |
 | GET | /api/v1/incidents/:id | 事件详情 |
 | POST | /api/v1/incidents/:id/assign | 指派调查 |
 | POST | /api/v1/incidents/:id/rectify | 提交整改 |
 | POST | /api/v1/incidents/:id/close | 关闭事件 |
+| POST | /api/v1/incidents/:id/supervisions | 发起督办（每条逾期记录仅一次，重复返回 409） |
 | GET | /api/v1/inspections | 检查计划列表 |
 | POST | /api/v1/inspections | 创建检查计划 |
 | GET | /api/v1/inspections/:id | 检查详情与检查项 |
@@ -165,7 +167,7 @@ wje-132/
 ## 主要功能
 
 - 安全概览：近 30 天事件趋势折线图、风险等级分布饼图、待整改列表、本月培训完成率。
-- 事件管理：上报事件、指派调查、提交整改、关闭事件，按严重等级/状态/时间筛选。
+- 事件管理：上报事件、指派调查、提交整改、关闭事件，按严重等级/状态/时间筛选；逾期验收队列只列入已整改且整改期限已过的记录（按逾期时长与风险等级排序），管理员可发起一次督办并填写说明，重复督办返回冲突。
 - 检查管理：创建检查计划、逐项执行检查（合格/不合格）、得分与检查报告。
 - 培训管理：创建培训、记录签到与通过率。
 - 资质审核：提交资质、审核、过期预警。

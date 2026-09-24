@@ -108,6 +108,17 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS incident_supervisions (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  incident_id BIGINT UNSIGNED NOT NULL,
+  note TEXT NOT NULL,
+  operator_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  operator_name VARCHAR(50) NOT NULL DEFAULT '',
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_supervision_incident (incident_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- 预置种子数据（密码：admin/Admin@123，其余/User@123）
 INSERT INTO users (id, phone, password_hash, name, avatar, role, created_at) VALUES
 (1, '13800000001', '$2a$10$bFfMuQAuKWflKxpuDYdFpeGJPVgD83q/.278LHYLL5S0DDmEfChX2', '系统管理员', '', 'admin', NOW(3)),
