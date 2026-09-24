@@ -65,6 +65,24 @@ func IsValidSeverity(s string) bool {
 	return false
 }
 
+// SeverityRank 返回风险等级权重，值越大风险越高（未知等级按最低处理）。
+func SeverityRank(s string) int {
+	switch s {
+	case SeverityFatal:
+		return 5
+	case SeverityMajor:
+		return 4
+	case SeverityModerate:
+		return 3
+	case SeverityMinor:
+		return 2
+	case SeverityNearMiss:
+		return 1
+	default:
+		return 0
+	}
+}
+
 // IsValidIncidentStatus 校验事件状态。
 func IsValidIncidentStatus(s string) bool {
 	for _, v := range IncidentStatusValues {

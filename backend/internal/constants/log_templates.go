@@ -12,6 +12,8 @@ const (
 	LogIncidentAssignSuccess      = "incident assign success"
 	LogIncidentRectifySuccess     = "incident rectify success"
 	LogIncidentCloseSuccess       = "incident close success"
+	LogIncidentSuperviseSuccess   = "incident supervision success"
+	LogIncidentSuperviseConflict  = "incident supervision conflict"
 	LogIncidentStatusChangeFailed = "incident status change failed"
 	LogInspectionCreateSuccess    = "inspection create success"
 	LogInspectionExecuteSuccess   = "inspection execute success"

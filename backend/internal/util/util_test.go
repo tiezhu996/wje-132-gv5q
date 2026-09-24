@@ -59,3 +59,18 @@ func TestSeverityValidators(t *testing.T) {
 		t.Error("resolved should be valid")
 	}
 }
+
+func TestSeverityRank(t *testing.T) {
+	if constants.SeverityRank(constants.SeverityFatal) <= constants.SeverityRank(constants.SeverityMajor) {
+		t.Error("fatal should rank higher than major")
+	}
+	if constants.SeverityRank(constants.SeverityMajor) <= constants.SeverityRank(constants.SeverityModerate) {
+		t.Error("major should rank higher than moderate")
+	}
+	if constants.SeverityRank(constants.SeverityNearMiss) == 0 {
+		t.Error("near_miss should have positive rank")
+	}
+	if constants.SeverityRank("bogus") != 0 {
+		t.Error("unknown severity should rank zero")
+	}
+}

@@ -16,8 +16,11 @@ type SafetyIncident struct {
 	PhotoURLs             JSONList   `gorm:"type:json" json:"photo_urls"`
 	Status                string     `gorm:"size:30;not null;default:reported;index" json:"status"`
 	RectificationMeasures string     `gorm:"type:text" json:"rectification_measures"`
-	RectificationDeadline *time.Time `json:"rectification_deadline"`
+	RectificationDeadline *time.Time `gorm:"index:idx_incidents_deadline" json:"rectification_deadline"`
 	ReporterID            uint64     `gorm:"not null" json:"reporter_id"`
+	SupervisionNote       string     `gorm:"type:text" json:"supervision_note"`
+	SupervisionAt         *time.Time `json:"supervision_at"`
+	SupervisedBy          uint64     `gorm:"not null;default:0" json:"supervised_by"`
 	CreatedAt             time.Time  `json:"created_at"`
 }
 

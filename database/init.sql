@@ -30,10 +30,14 @@ CREATE TABLE IF NOT EXISTS safety_incidents (
   rectification_measures TEXT,
   rectification_deadline DATETIME,
   reporter_id BIGINT UNSIGNED NOT NULL,
+  supervision_note TEXT,
+  supervision_at DATETIME,
+  supervised_by BIGINT UNSIGNED NOT NULL DEFAULT 0,
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   PRIMARY KEY (id),
   KEY idx_incidents_status (status),
-  KEY idx_incidents_severity (severity_level)
+  KEY idx_incidents_severity (severity_level),
+  KEY idx_incidents_deadline (rectification_deadline)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS safety_inspections (

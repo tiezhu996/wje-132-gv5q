@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"safetyplatform/internal/constants"
 	"safetyplatform/internal/model"
 
 	"gorm.io/gorm"
@@ -95,6 +96,42 @@ func (r *SafetyIncidentRepository) SeverityDistribution() ([]map[string]any, err
 		return nil, fmt.Errorf("severity distribution: %w", err)
 	}
 	return rows, nil
+}
+
+// OverdueAcceptance 逾期验收队列：已整改（resolved）且整改期限早于当前时刻。
+// 排序：逾期时长从长到短（期限升序），风险等级从高到低。
+func (r *SafetyIncidentRepository) OverdueAcceptance(now time.Time) ([]model.SafetyIncident, error) {
+	var list []model.SafetyIncident
+	severityOrder := "CASE severity_level " +
+		"WHEN '" + constants.SeverityFatal + "' THEN 5 " +
+		"WHEN '" + constants.SeverityMajor + "' THEN 4 " +
+		"WHEN '" + constants.SeverityModerate + "' THEN 3 " +
+		"WHEN '" + constants.SeverityMinor + "' THEN 2 " +
+		"WHEN '" + constants.SeverityNearMiss + "' THEN 1 " +
+		"ELSE 0 END DESC"
+	if err := r.db.Where("status = ? AND rectification_deadline IS NOT NULL AND rectification_deadline < ?",
+		constants.IncidentResolved, now).
+		Order("rectification_deadline ASC").Order(severityOrder).
+		Find(&list).Error; err != nil {
+		return nil, fmt.Errorf("overdue acceptance list: %w", err)
+	}
+	return list, nil
+}
+
+// Supervise 对事件发起一次督办。仅当事件处于已整改且尚未督办时更新成功，
+// 返回 rows==0 表示记录不存在、状态已变更或已被督办（调用方需区分冲突原因）。
+func (r *SafetyIncidentRepository) Supervise(id uint64, operatorID uint64, note string, now time.Time) (int64, error) {
+	res := r.db.Model(&model.SafetyIncident{}).
+		Where("id = ? AND status = ? AND supervised_by = 0", id, constants.IncidentResolved).
+		Updates(map[string]any{
+			"supervision_note": note,
+			"supervision_at":   now,
+			"supervised_by":    operatorID,
+		})
+	if res.Error != nil {
+		return 0, fmt.Errorf("supervise safety incident: %w", res.Error)
+	}
+	return res.RowsAffected, nil
 }
 
 // PendingRectification 待整改事件。

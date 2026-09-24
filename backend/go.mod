@@ -11,6 +11,12 @@ require (
 	gorm.io/gorm v1.25.11
 )
 
+// 仅用于带 sqlite_integration 构建标签的本地集成测试（CGO），正常构建/测试不编译。
+require (
+	github.com/mattn/go-sqlite3 v1.14.22
+	gorm.io/driver/sqlite v1.5.7
+)
+
 require (
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"safetyplatform/internal/constants"
+	"safetyplatform/internal/dto"
 	"safetyplatform/internal/model"
 	"safetyplatform/internal/repository"
 	"safetyplatform/internal/util"
@@ -118,6 +119,59 @@ func (s *SafetyIncidentService) SeverityDistribution() ([]map[string]any, error)
 // PendingRectification 待整改列表。
 func (s *SafetyIncidentService) PendingRectification() ([]model.SafetyIncident, error) {
 	return s.repo.PendingRectification()
+}
+
+// OverdueAcceptance 逾期验收队列：仅包含已整改且期限早于当前时刻的事件。
+func (s *SafetyIncidentService) OverdueAcceptance() ([]dto.OverdueIncident, error) {
+	now := time.Now()
+	list, err := s.repo.OverdueAcceptance(now)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]dto.OverdueIncident, 0, len(list))
+	for i := range list {
+		var overdue int64
+		if list[i].RectificationDeadline != nil {
+			overdue = int64(now.Sub(*list[i].RectificationDeadline).Seconds())
+			if overdue < 0 {
+				overdue = 0
+			}
+		}
+		result = append(result, dto.OverdueIncident{SafetyIncident: list[i], OverdueDuration: overdue})
+	}
+	return result, nil
+}
+
+// Supervise 对一条已整改且逾期未验收的事件发起一次督办并填写说明。
+// 已关闭/期限未到/非已整改的记录不能督办；已督办过的记录返回冲突。
+func (s *SafetyIncidentService) Supervise(id, operatorID uint64, note string) (*model.SafetyIncident, error) {
+	i, err := s.repo.FindByID(id)
+	if err != nil {
+		return nil, util.Wrap(err, "SafetyIncident[id=%d] supervise find failed", id)
+	}
+	if i.Status != constants.IncidentResolved {
+		return nil, util.NewAppError(constants.CodeIncidentStatusConflict, "SafetyIncident[id="+u64(id)+"] supervise conflict: status="+i.Status)
+	}
+	if i.RectificationDeadline == nil || !i.RectificationDeadline.Before(time.Now()) {
+		return nil, util.NewAppError(constants.CodeIncidentStatusConflict, "SafetyIncident[id="+u64(id)+"] supervise conflict: deadline not reached")
+	}
+	if i.SupervisedBy != 0 {
+		return nil, util.NewAppError(constants.CodeSupervisionConflict, "SafetyIncident[id="+u64(id)+"] supervise conflict: already supervised")
+	}
+	rows, err := s.repo.Supervise(id, operatorID, note, time.Now())
+	if err != nil {
+		return nil, util.Wrap(err, "SafetyIncident[id=%d] supervise save failed", id)
+	}
+	if rows == 0 {
+		// 并发场景下可能已被督办或状态已变更，重新加载确认冲突原因。
+		if latest, findErr := s.repo.FindByID(id); findErr == nil && latest.SupervisedBy != 0 {
+			s.logger.Warn(constants.LogIncidentSuperviseConflict, "incident_id", id)
+			return nil, util.NewAppError(constants.CodeSupervisionConflict, "SafetyIncident[id="+u64(id)+"] supervise conflict: already supervised")
+		}
+		return nil, util.NewAppError(constants.CodeIncidentStatusConflict, "SafetyIncident[id="+u64(id)+"] supervise conflict: state changed")
+	}
+	s.logger.Info(constants.LogIncidentSuperviseSuccess, "incident_id", id, "operator_id", operatorID)
+	return s.repo.FindByID(id)
 }
 
 func u64(v uint64) string {

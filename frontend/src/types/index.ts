@@ -22,7 +22,14 @@ export interface SafetyIncident {
   rectification_measures: string
   rectification_deadline: string | null
   reporter_id: number
+  supervision_note: string
+  supervision_at: string | null
+  supervised_by: number
   created_at: string
+}
+
+export interface OverdueIncident extends SafetyIncident {
+  overdue_duration: number
 }
 
 export interface SafetyInspection {

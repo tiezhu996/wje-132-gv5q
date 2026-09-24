@@ -132,6 +132,36 @@ func (h *SafetyIncidentHandler) Close(c *gin.Context) {
 	OKWithMessage(c, constants.MsgIncidentClosed, inc)
 }
 
+// OverdueAcceptance 逾期验收队列。
+func (h *SafetyIncidentHandler) OverdueAcceptance(c *gin.Context) {
+	list, err := h.svc.OverdueAcceptance()
+	if err != nil {
+		h.wrapError(c, err, "SafetyIncident overdue acceptance list failed")
+		return
+	}
+	OK(c, gin.H{"list": list})
+}
+
+// Supervise 发起督办。
+func (h *SafetyIncidentHandler) Supervise(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		Fail(c, http.StatusBadRequest, constants.CodeBadRequest, "SafetyIncident[id] supervise: invalid id")
+		return
+	}
+	var req dto.SupervisionRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		Fail(c, http.StatusBadRequest, constants.CodeBadRequest, "SafetyIncident[id="+strconv.FormatUint(id, 10)+"] supervise: "+err.Error())
+		return
+	}
+	inc, err := h.svc.Supervise(id, middleware.GetUserID(c), req.Note)
+	if err != nil {
+		h.wrapError(c, err, "SafetyIncident supervise failed")
+		return
+	}
+	OKWithMessage(c, constants.MsgSupervisionSent, inc)
+}
+
 func (h *SafetyIncidentHandler) wrapError(c *gin.Context, err error, ctx string) {
 	var appErr *util.AppError
 	if errors.As(err, &appErr) {

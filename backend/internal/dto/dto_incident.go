@@ -1,6 +1,10 @@
 package dto
 
-import "time"
+import (
+	"time"
+
+	"safetyplatform/internal/model"
+)
 
 // IncidentReportRequest 上报事件请求。
 type IncidentReportRequest struct {
@@ -19,4 +23,15 @@ type IncidentReportRequest struct {
 type RectificationRequest struct {
 	Measures string     `json:"measures" binding:"required"`
 	Deadline *time.Time `json:"deadline"`
+}
+
+// SupervisionRequest 督办请求。
+type SupervisionRequest struct {
+	Note string `json:"note" binding:"required,max=500"`
+}
+
+// OverdueIncident 逾期验收队列条目，附带逾期时长（秒）。
+type OverdueIncident struct {
+	model.SafetyIncident
+	OverdueDuration int64 `json:"overdue_duration"`
 }

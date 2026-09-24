@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { message } from 'antd'
-import { assignIncident, rectifyIncident, closeIncident, getIncident } from '@/api/incident'
+import { assignIncident, rectifyIncident, closeIncident, getIncident, superviseIncident } from '@/api/incident'
 import type { SafetyIncident } from '@/types'
 
 export function useIncident() {
@@ -35,5 +35,11 @@ export function useIncident() {
     await load(id)
   }
 
-  return { loading, incident, load, assign, rectify, close }
+  async function supervise(id: number, note: string) {
+    await superviseIncident(id, note)
+    message.success('督办已发出')
+    await load(id)
+  }
+
+  return { loading, incident, setIncident, load, assign, rectify, close, supervise }
 }
